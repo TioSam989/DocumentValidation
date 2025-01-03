@@ -6,6 +6,7 @@ Coordinates the PDF reading and date validation process.
 from pdf_reader import PDFReader
 from date_validator import DateValidator
 
+
 def main(file_path: str):
     """
     Main function to validate a PDF document.
@@ -44,6 +45,8 @@ def main(file_path: str):
             print("No valid dates found in the document.")
     else:
         print("Failed to extract text from the PDF.")
+
+    
 
 if __name__ == "__main__":
     import sys
