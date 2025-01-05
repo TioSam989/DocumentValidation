@@ -1,0 +1,9 @@
+fitz==0.0.1.dev2
+pdf2image==1.17.0
+pdfminer==20191125
+Pillow==11.1.0
+PyPDF2==3.0.1
+pytesseract==0.3.13
+python_dateutil==2.9.0.post0
+Requests==2.32.3
+simple_term_menu==1.6.6
