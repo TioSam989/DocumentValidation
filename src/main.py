@@ -1,5 +1,5 @@
 from utils.extract_text import extract_text_from_image, extract_images_from_pdf
-from utils.utils import clear_console, save_images
+from utils.utils import clear_console, get_char_count, get_word_count, save_images, sleep
 from simple_term_menu import TerminalMenu
 from urllib.parse import urlparse
 import sys
@@ -19,8 +19,13 @@ def main():
     clear_console()
 
     # Menu principal
-    options = ["Image (Local)", "Image (URL)", "PDF (Local)", "PDF (URL)", "Exit"]
-    terminal_menu = TerminalMenu(options, title="Select the file type and source", show_search_hint=True)
+    options = ["Image (Local)", "Image (URL)", "PDF (Local)", "PDF (URL)", None]
+    if os.path.exists("output.txt"):
+        chars_count = get_char_count()        
+        if chars_count > 0:
+            options.extend(["See latest output"])
+    options.extend(["Exit", None])    
+    terminal_menu = TerminalMenu(options, title="Select the file type and source or exit", show_search_hint=True)
     menu_entry_index = terminal_menu.show()
 
     if menu_entry_index == len(options) - 1:
@@ -29,7 +34,6 @@ def main():
 
     option_selected = options[menu_entry_index]
 
-    # Obter o caminho ou URL
     file_path_or_url = input("Enter the file path or URL: ").strip()
 
     if option_selected == "Image (Local)":
@@ -45,10 +49,51 @@ def main():
         text = "\n".join([extract_text_from_image(img, use_local_image=True) for img in images]) if images else None
 
     if text:
-        print("\nText extracted successfully:")
-        print(text)
+        print("\nText extracted successfully")
+        
+        word_count = get_word_count()
+        character = get_char_count()        
+        
+        options = ["See full output","Extract validate date",None,"Exit"]
+        terminal_menu = TerminalMenu(options, title="Select an option")
+        menu_entry_index = terminal_menu.show()
+        
+        option_selected = options[menu_entry_index]
+        
+        if menu_entry_index == len(options) - 1:
+            print("Exiting...")
+            sys.exit(0)
+            
+        elif option_selected == "See full output":
+            clear_console()
+            
+            print("In development...")
+            main()
+            # options = ["extract validate date",None,"exit"]
+            # terminal_menu = TerminalMenu(options, title="Select an option, after see content")
+            # menu_entry_index = terminal_menu.show()
+            
+            #show here preview of all the text file
+        elif option_selected == "Extract validate date":
+            clear_console()
+            #call the function of extract validate date
+        
     else:
         print("\nFailed to extract text.")
+        
+        options = ["Try again", "Exit"]
+        terminal_menu = TerminalMenu(options, title="Select an option")
+        menu_entry_index = terminal_menu.show()
+        
+        if menu_entry_index == len(options) - 1:
+            clear_console()
+            print("Exiting...")
+            sleep(2)
+        else:
+            clear_console()
+            main()
+            
+            sys.exit(0)
 
 if __name__ == "__main__":
     main()
