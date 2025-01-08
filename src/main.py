@@ -20,7 +20,7 @@ def main():
 
     # Menu principal
     options = ["Image (Local)", "Image (URL)", "PDF (Local)", "PDF (URL)", "Exit"]
-    terminal_menu = TerminalMenu(options, title="Select the file type and source")
+    terminal_menu = TerminalMenu(options, title="Select the file type and source", show_search_hint=True)
     menu_entry_index = terminal_menu.show()
 
     if menu_entry_index == len(options) - 1:
