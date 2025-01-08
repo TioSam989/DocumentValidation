@@ -3,10 +3,10 @@ import time
 from PIL import ImageOps,ImageChops, Image
 
 def get_word_count(file_path='./output.txt'):
-    return int(os.popen(f"wc -w {file_path}").read().strip())
+    return int(os.popen(f"cat {file_path} | wc -w").read().strip())
 
 def get_char_count(file_path='./output.txt'): 
-    return int(os.popen(f"wc -c {file_path}").read().strip())
+    return int(os.popen(f"cat {file_path} | wc -c").read().strip())
 
 def clear_console(wait_time=None):
     if wait_time is not None:
