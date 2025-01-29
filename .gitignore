@@ -7,7 +7,8 @@ __pycache__/
 *.so
 
 venv/
-
+bin
+/bin
 src/temp_images
 src/output.txt
 

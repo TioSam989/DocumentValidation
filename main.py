@@ -5,10 +5,17 @@ Versão 'worker' sem menus interativos.
 
 import sys
 import os
+import requests  # Added for making API requests
 from src.utils.extract_text import extract_images_from_pdf, extract_text_from_image
 from src.utils.utils import clear_console, save_images
 from date_validator import DateValidator
 from pdf_reader import PDFReader
+
+# Define API endpoints
+# Get API routes from environment variables
+API_ROUTES_INVALID_DATES = os.getenv('API_ROUTES_INVALID_DATES')
+API_ROUTES_NO_DATES = os.getenv('API_ROUTES_NO_DATES') 
+API_ROUTES_VALID_DATES = os.getenv('API_ROUTES_VALID_DATES')
 
 def detect_file_type(path_or_url: str) -> str:
     """
@@ -50,13 +57,25 @@ def process_file(path_or_url: str) -> str:
     else:
         return ""
 
-def extract_dates(text: str) -> list:
+def extract_dates(text: str) -> tuple:
     """
-    Exemplo de extração de datas usando seu date_validator.py
+    Extrai todas as possíveis datas e valida quais são corretas.
+    Retorna uma tupla (possible_dates, valid_dates).
     """
     possible_dates = DateValidator.find_dates(text)
     valid_dates = [d for d in possible_dates if DateValidator.validate_date(d)]
-    return valid_dates
+    return possible_dates, valid_dates
+
+def call_api(route: str, payload: dict):
+    """
+    Faz uma requisição POST para a API especificada com o payload fornecido.
+    """
+    try:
+        response = requests.post(route, json=payload)
+        response.raise_for_status()  # Levanta um erro para códigos de status 4xx/5xx
+        print(f"Successfully called {route}")
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao chamar {route}: {e}")
 
 def main():
     """
@@ -80,13 +99,36 @@ def main():
     print("\n======================\n")
 
     # 2) (Opcional) Extrair datas
-    dates_found = extract_dates(extracted_text)
-    if dates_found:
+    possible_dates, valid_dates = extract_dates(extracted_text)
+    
+    if valid_dates:
         print("Datas válidas encontradas:")
-        for date_str in dates_found:
+        for date_str in valid_dates:
             print(f"  - {date_str}")
+        # Chama API Route 3
+        payload = {
+            "file": path_or_url,
+            "valid_dates": valid_dates
+        }
+        call_api(API_ROUTES_VALID_DATES, payload)
+    elif possible_dates:
+        print("Datas encontradas, mas nenhuma é válida.")
+        for date_str in possible_dates:
+            print(f"  - {date_str}")
+        # Chama API Route 1
+        payload = {
+            "file": path_or_url,
+            "invalid_dates": possible_dates
+        }
+        call_api(API_ROUTES_INVALID_DATES, payload)
     else:
-        print("Nenhuma data válida encontrada.")
+        print("Nenhuma data encontrada.")
+        # Chama API Route 2
+        payload = {
+            "file": path_or_url,
+            "message": "Nenhuma data encontrada no documento."
+        }
+        call_api(API_ROUTES_NO_DATES, payload)
 
 if __name__ == "__main__":
     main()

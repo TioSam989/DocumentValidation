@@ -9,8 +9,8 @@ class DateValidator:
 
     @staticmethod
     def find_dates(text: str) -> list:
-        # Regex simples para capturar datas no formato DD/MM/YYYY, etc.
-        pattern = r"\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}[/-]\d{1,2}[/-]\d{1,2})\b"
+        # Regex aprimorada para capturar datas com separadores /, -, ., ou espaço
+        pattern = r"\b(?:\d{1,2}[/\- .]\d{1,2}[/\- .]\d{2,4}|\d{4}[/\- .]\d{1,2}[/\- .]\d{1,2})\b"
         return re.findall(pattern, text)
 
     @staticmethod

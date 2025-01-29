@@ -4,6 +4,7 @@ Funções auxiliares
 """
 import os
 import time
+import requests
 from PIL import ImageOps, ImageChops, Image
 
 def clear_console(wait_time=None):
@@ -37,6 +38,18 @@ def increase_contrast(img):
 
 def binarize_image(img):
     return img.convert("L").point(lambda x: 0 if x < 128 else 255, mode="1")
+
+def call_api(route: str, payload: dict):
+    """
+    Faz uma requisição POST para a API especificada com o payload fornecido.
+    """
+    try:
+        response = requests.post(route, json=payload)
+        response.raise_for_status()  # Levanta um erro para códigos de status 4xx/5xx
+        print(f"Successfully called {route}")
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao chamar {route}: {e}")
+
 
 def trim(im):
     """
